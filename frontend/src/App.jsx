@@ -30,7 +30,7 @@ export default function App() {
   }
   useEffect(() => { loadProducts().catch(() => setNotice("Cannot reach the API. Start the backend on port 4000.")); }, [search, category]);
 
-  const subtotal = useMemo(() => cart.reduce((sum, item) => sum + item.product.price, 0), [cart]); // BUG 3: quantity is ignored.
+  const subtotal = useMemo(() => cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0), [cart]);
   const total = Math.max(0, subtotal - discount);
 
   function addToCart(product) {
