@@ -23,10 +23,10 @@ app.get("/api/products", (req, res) => {
   let result = [...products];
 
   // BUG 1: Search is case-sensitive. "head" won't match "Wireless Headphones".
-  if (search) result = result.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  if (search) result = result.filter(p => p.name.includes(search));
 
   // BUG 2: The UI sends a category, but this compares against the wrong property.
-  if (category !== "All") result = result.filter(p => p.category === category);
+  if (category !== "All") result = result.filter(p => p.categoryName === category);
 
   res.json(result);
 });
@@ -63,10 +63,7 @@ app.post("/api/checkout", (req, res) => {
     }
   }
 
-  for (const item of items) {
-    const product = products.find(p => p.id === Number(item.productId));
-    product.stock -= Number(item.quantity);
-  }
+  // BUG 5: Order succeeds, but inventory is never reduced after checkout.
   const order = { id: `ORD-${Date.now()}`, items, createdAt: new Date().toISOString() };
   orders.push(order);
   res.status(201).json({ message: "Order placed successfully", order });
